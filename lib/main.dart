@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: buildPortfolioTheme(Brightness.light),
       darkTheme: buildPortfolioTheme(Brightness.dark),
-      home: const MyHomePage(title: 'MyPortfolio'),
+      home: const MyHomePage(),
     );
   }
 }

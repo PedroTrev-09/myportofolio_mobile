@@ -1,86 +1,316 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:myportofolio_mobile/theme.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+/// The menu is static at this tutorial stage; it needs no local mutable state.
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+  final String npm = '2506553383';
+  final String nama = 'Haikal Rafka A Rahman';
+  final String kelas = 'PBP A';
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  final List<ItemHomepage> items = const [
+    ItemHomepage(
+      'Lihat Proyek',
+      Icons.folder_outlined,
+      PortfolioColors.dusk,
+      Colors.white,
+    ),
+    ItemHomepage(
+      'Tambah Proyek',
+      Icons.add_circle_outline,
+      PortfolioColors.sunset,
+      PortfolioColors.ink,
+    ),
+    ItemHomepage(
+      'Lihat Pengalaman',
+      Icons.work_outline,
+      PortfolioColors.midday,
+      PortfolioColors.ink,
+    ),
+    ItemHomepage(
+      'Tambah Pengalaman',
+      Icons.playlist_add,
+      PortfolioColors.inkSoft,
+      Colors.white,
+    ),
+    ItemHomepage(
+      'Logout',
+      Icons.logout,
+      PortfolioColors.paperAlt,
+      PortfolioColors.ink,
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('MyPortfolio'),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 20),
+            child: Icon(Icons.wb_sunny_outlined, size: 22),
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1120),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(
+                      'PORTOFOLIO PRIBADI',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      nama,
+                      style: theme.textTheme.headlineLarge?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -1,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Mahasiswa Sistem Informasi, Universitas Indonesia. '
+                      'Graphic design, branding, dan fotografi.',
+                      style: TextStyle(fontSize: 15, height: 1.6),
+                    ),
+                    const SizedBox(height: 28),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        // The full name must remain readable, including on narrow phones.
+                        if (constraints.maxWidth < 560) {
+                          return Column(
+                            children: [
+                              InfoCard(title: 'Nama', content: nama),
+                              const SizedBox(height: 12),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: InfoCard(title: 'NPM', content: npm),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: InfoCard(
+                                      title: 'Kelas',
+                                      content: kelas,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        }
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: InfoCard(title: 'NPM', content: npm),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: InfoCard(title: 'Nama', content: nama),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: InfoCard(title: 'Kelas', content: kelas),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'Selamat datang di MyPortfolio Mobile!',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Proyek, pengalaman, dan perjalanan kreatif saya.',
+                      style: TextStyle(height: 1.5),
+                    ),
+                    const SizedBox(height: 20),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final largeText =
+                            MediaQuery.textScalerOf(context).scale(14) > 21;
+                        final columns = constraints.maxWidth < 300 || largeText
+                            ? 2
+                            : 3;
+                        final cardWidth =
+                            (constraints.maxWidth - 12 * (columns - 1)) /
+                            columns;
+                        var minimumHeight = 96.0;
+                        for (final item in items) {
+                          final painter = TextPainter(
+                            text: TextSpan(
+                              text: item.name,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                height: 1.25,
+                              ),
+                            ),
+                            textDirection: Directionality.of(context),
+                            textScaler: MediaQuery.textScalerOf(context),
+                          )..layout(maxWidth: cardWidth - 24);
+                          minimumHeight = math.max(
+                            minimumHeight,
+                            painter.height + 64,
+                          );
+                          painter.dispose();
+                        }
+                        final cardHeight = math.max(
+                          minimumHeight,
+                          cardWidth /
+                              (constraints.maxWidth >= 700 && !largeText
+                                  ? 1.8
+                                  : .92),
+                        );
+                        return GridView.count(
+                          crossAxisCount: columns,
+                          shrinkWrap: true,
+                          primary: false,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: cardWidth / cardHeight,
+                          children: items
+                              .map(
+                                (item) =>
+                                    ItemCard(item, key: ValueKey(item.name)),
+                              )
+                              .toList(),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 32),
+                    const Text(
+                      '© 2026 Haikal Rafka A Rahman • PBP A',
+                      style: TextStyle(fontSize: 12, height: 1.5),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+}
+
+/// A title/value card: layout sizing belongs to its parent, not the full screen.
+class InfoCard extends StatelessWidget {
+  const InfoCard({super.key, required this.title, required this.content});
+
+  final String title;
+  final String content;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontSize: 12)),
+              const SizedBox(height: 8),
+              Text(
+                content,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  height: 1.35,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The tutorial's menu model, with explicit contrasting colors from the website.
+class ItemHomepage {
+  const ItemHomepage(this.name, this.icon, this.color, this.foregroundColor);
+
+  final String name;
+  final IconData icon;
+  final Color color;
+  final Color foregroundColor;
+}
+
+class ItemCard extends StatelessWidget {
+  const ItemCard(this.item, {super.key});
+
+  final ItemHomepage item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      child: Material(
+        color: item.color,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+        ),
+        child: InkWell(
+          onTap: () {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text('Kamu telah menekan tombol ${item.name}!'),
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(item.icon, size: 30, color: item.foregroundColor),
+                const SizedBox(height: 10),
+                Text(
+                  item.name,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: item.foregroundColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    height: 1.25,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
