@@ -1,11 +1,11 @@
 {
-    "name": "myportofolio_mobile",
-    "short_name": "myportofolio_mobile",
+    "name": "MyPortfolio Mobile",
+    "short_name": "MyPortfolio",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Mobile companion for Haikal Rafka personal portfolio.",
+    "background_color": "#FFFCF5",
+    "theme_color": "#BC4F4F",
+    "description": "Portofolio Haikal Rafka A Rahman — proyek dan pengalaman.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
