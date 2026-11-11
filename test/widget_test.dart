@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/menu.dart';
@@ -69,5 +72,77 @@ void main() {
     await tester.pump(const Duration(seconds: 4));
     await tester.pumpAndSettle();
     expect(find.byType(SnackBar), findsNothing);
+  });
+
+  for (final size in [
+    const Size(320, 568),
+    const Size(390, 844),
+    const Size(1440, 900),
+  ]) {
+    testWidgets('layout and all menu actions fit $size', (tester) async {
+      await pumpMenu(tester, size: size);
+      expect(tester.takeException(), isNull);
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('Logout')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.byKey(const ValueKey('Logout')));
+      await tester.pumpAndSettle();
+      expect(find.text('Kamu telah menekan tombol Logout!'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('large text on a small phone stays scrollable without overflow', (
+    tester,
+  ) async {
+    await pumpMenu(tester, size: const Size(320, 568), scale: 2);
+    expect(tester.takeException(), isNull);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('Logout')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.byKey(const ValueKey('Logout')));
+    await tester.pumpAndSettle();
+    expect(find.text('Kamu telah menekan tombol Logout!'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the menu also renders in the portfolio night palette', (
+    tester,
+  ) async {
+    await pumpMenu(tester, brightness: Brightness.dark);
+    final context = tester.element(find.byType(MyHomePage));
+    expect(Theme.of(context).colorScheme.surface, PortfolioColors.night);
+    await tester.tap(find.byKey(const ValueKey('Lihat Pengalaman')));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Kamu telah menekan tombol Lihat Pengalaman!'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('menu actions work with keyboard focus', (tester) async {
+    await pumpMenu(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Kamu telah menekan tombol Lihat Proyek!'),
+      findsOneWidget,
+    );
+  });
+
+  test('action labels have at least 4.5 to 1 color contrast', () {
+    for (final item in const MyHomePage().items) {
+      final a = item.color.computeLuminance();
+      final b = item.foregroundColor.computeLuminance();
+      final ratio = (math.max(a, b) + .05) / (math.min(a, b) + .05);
+      expect(ratio, greaterThanOrEqualTo(4.5), reason: item.name);
+    }
   });
 }
