@@ -13,34 +13,34 @@ class MyHomePage extends StatelessWidget {
 
   final List<ItemHomepage> items = const [
     ItemHomepage(
-      'Lihat Proyek',
-      Icons.folder_outlined,
-      PortfolioColors.dusk,
-      Colors.white,
+      name: 'Lihat Proyek',
+      icon: Icons.folder_outlined,
+      color: PortfolioColors.dusk,
+      foregroundColor: Colors.white,
     ),
     ItemHomepage(
-      'Tambah Proyek',
-      Icons.add_circle_outline,
-      PortfolioColors.sunset,
-      PortfolioColors.ink,
+      name: 'Tambah Proyek',
+      icon: Icons.add_circle_outline,
+      color: PortfolioColors.sunset,
+      foregroundColor: PortfolioColors.ink,
     ),
     ItemHomepage(
-      'Lihat Pengalaman',
-      Icons.work_outline,
-      PortfolioColors.midday,
-      PortfolioColors.ink,
+      name: 'Lihat Pengalaman',
+      icon: Icons.work_outline,
+      color: PortfolioColors.midday,
+      foregroundColor: PortfolioColors.ink,
     ),
     ItemHomepage(
-      'Tambah Pengalaman',
-      Icons.playlist_add,
-      PortfolioColors.inkSoft,
-      Colors.white,
+      name: 'Tambah Pengalaman',
+      icon: Icons.playlist_add,
+      color: PortfolioColors.inkSoft,
+      foregroundColor: Colors.white,
     ),
     ItemHomepage(
-      'Logout',
-      Icons.logout,
-      PortfolioColors.paperAlt,
-      PortfolioColors.ink,
+      name: 'Logout',
+      icon: Icons.logout,
+      color: PortfolioColors.paperAlt,
+      foregroundColor: PortfolioColors.ink,
     ),
   ];
 
@@ -255,7 +255,12 @@ class InfoCard extends StatelessWidget {
 
 /// The tutorial's menu model, with explicit contrasting colors from the website.
 class ItemHomepage {
-  const ItemHomepage(this.name, this.icon, this.color, this.foregroundColor);
+  const ItemHomepage({
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.foregroundColor,
+  });
 
   final String name;
   final IconData icon;
