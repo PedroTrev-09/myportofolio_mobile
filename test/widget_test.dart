@@ -44,6 +44,30 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('assignment actions use distinct model colors in their cards', (
+    tester,
+  ) async {
+    await pumpMenu(tester);
+    final items = const MyHomePage().items;
+    expect(items.length, greaterThanOrEqualTo(3));
+    expect(
+      items.map((item) => item.name),
+      containsAll(['Lihat Proyek', 'Tambah Proyek', 'Logout']),
+    );
+    expect(items.map((item) => item.color).toSet().length, items.length);
+    for (final item in items) {
+      final card = find.byKey(ValueKey(item.name));
+      final material = tester.widget<Material>(
+        find.descendant(of: card, matching: find.byType(Material)).first,
+      );
+      expect(material.color, item.color, reason: item.name);
+      expect(
+        find.descendant(of: card, matching: find.byIcon(item.icon)),
+        findsOneWidget,
+      );
+    }
+  });
+
   for (final item in const MyHomePage().items) {
     testWidgets('${item.name} shows its own SnackBar', (tester) async {
       await pumpMenu(tester);
