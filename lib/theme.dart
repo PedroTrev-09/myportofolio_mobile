@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The sunrise palette comes from the existing Django portfolio stylesheet.
 abstract final class PortfolioColors {
