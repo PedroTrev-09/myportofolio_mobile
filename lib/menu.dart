@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/theme.dart';
+import 'package:myportofolio_mobile/project_form.dart';
+import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 
 /// The menu is static at this tutorial stage; it needs no local mutable state.
 class MyHomePage extends StatelessWidget {
@@ -57,6 +59,7 @@ class MyHomePage extends StatelessWidget {
           ),
         ],
       ),
+      drawer: const LeftDrawer(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -294,6 +297,14 @@ class ItemCard extends StatelessWidget {
                   duration: const Duration(seconds: 3),
                 ),
               );
+            if (item.name == 'Tambah Proyek') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProjectFormPage(),
+                ),
+              );
+            }
           },
           child: Padding(
             padding: const EdgeInsets.all(12),

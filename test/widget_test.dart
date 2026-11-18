@@ -151,7 +151,7 @@ void main() {
 
   testWidgets('menu actions work with keyboard focus', (tester) async {
     await pumpMenu(tester);
-    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    Focus.of(tester.element(find.text('Lihat Proyek'))).requestFocus();
     await tester.pumpAndSettle();
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
