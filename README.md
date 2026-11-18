@@ -6,8 +6,9 @@
 
 ## Progres
 
-- Tutorial 08: implementasi dan validasi lokal selesai.
-- Tugas 7: melanjutkan Tutorial 08 pada branch `IA-7`, di repositori mobile yang sama.
+- Tutorial 09 (Done)
+- Tutorial 08 (Done)
+- Tugas 7 (Done)
 
 ## Menjalankan aplikasi
 
