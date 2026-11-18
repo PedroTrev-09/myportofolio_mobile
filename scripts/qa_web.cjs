@@ -40,6 +40,14 @@ const actions=['Lihat Proyek','Tambah Proyek','Lihat Pengalaman','Tambah Pengala
     const message='Kamu telah menekan tombol '+name+'!';
     await page.getByText(message,{exact:true}).first().waitFor({state:'attached'});
     check(true,variant.name+': '+name+' shows the matching SnackBar');
+    if(name==='Tambah Proyek'){
+     await page.getByRole('heading',{name:'Add Project Form',exact:true}).waitFor();
+     check(true,variant.name+': project action opens the form');
+     await page.goBack();
+     await page.getByRole('heading',{name:'MyPortfolio',exact:true}).waitFor();
+     check(true,variant.name+': browser Back returns to the menu');
+     if(variant.height<700){await page.mouse.move(160,300);await page.mouse.wheel(0,1400);await page.waitForTimeout(200);}
+    }
    }
    await page.waitForTimeout(350);
    await page.screenshot({path:path.join(output,variant.name+'-snackbar.png')});
@@ -49,6 +57,52 @@ const actions=['Lihat Proyek','Tambah Proyek','Lihat Pengalaman','Tambah Pengala
     await page.getByText('Kamu telah menekan tombol Lihat Proyek!',{exact:true}).first().waitFor({state:'attached'});
     check(true,'desktop: keyboard activates a focused menu action');
    }
+   await page.getByRole('button',{name:'Open navigation menu',exact:true}).click();
+   await page.getByText('Add Project',{exact:true}).click();
+   await page.getByRole('heading',{name:'Add Project Form',exact:true}).waitFor();
+   check(true,variant.name+': drawer opens the project form');
+   const scrollForm=async(delta)=>{await page.mouse.move(variant.width/2,Math.min(variant.height-100,400));await page.mouse.wheel(0,delta);await page.waitForTimeout(200);};
+   await scrollForm(1800);
+   await page.getByRole('button',{name:'Save',exact:true}).click();
+   await scrollForm(-1800);
+   await page.getByText('Nama proyek tidak boleh kosong!',{exact:true}).first().waitFor({state:'attached'});
+   await page.getByText('Deskripsi proyek tidak boleh kosong!',{exact:true}).first().waitFor({state:'attached'});
+   check(true,variant.name+': required fields reject empty submission');
+   const enter=async(name,value)=>{
+    const field=page.getByRole('textbox',{name});
+    await field.click();
+    await page.waitForTimeout(200); // Flutter attaches its text-input connection after focus.
+    await field.pressSequentially(value,{delay:20});
+    await page.waitForTimeout(100);
+    await page.keyboard.press('Tab');
+   };
+   await enter(/^Nama Proyek/,'Portofolio Flutter');
+   await enter(/^Deskripsi Proyek/,'Latihan form Tutorial 09.');
+   await page.getByRole('button',{name:'Kategori Proyek Web Development',exact:true}).click();
+   await page.getByRole('menuitem',{name:'Mobile Development',exact:true}).click();
+   await enter('Teknologi yang Digunakan','Flutter, Dart');
+   await enter('Tautan Proyek','https://example.com/portfolio');
+   await scrollForm(1800);
+   await page.screenshot({path:path.join(output,variant.name+'-form.png')});
+   await page.getByRole('button',{name:'Save',exact:true}).click();
+   for(const line of ['Nama Proyek: Portofolio Flutter','Deskripsi: Latihan form Tutorial 09.','Kategori: Mobile Development','Teknologi: Flutter, Dart','Tautan: https://example.com/portfolio']){
+    await page.getByText(line,{exact:true}).waitFor({state:'attached'});
+   }
+   check(true,variant.name+': confirmation shows all five submitted values');
+   await page.waitForTimeout(350); // Wait for the dialog transition before visual capture.
+   await page.screenshot({path:path.join(output,variant.name+'-dialog.png')});
+   await page.getByRole('button',{name:'OK',exact:true}).click();
+   await scrollForm(-1800);
+   for(const name of ['Nama Proyek','Deskripsi Proyek','Teknologi yang Digunakan','Tautan Proyek']){
+    check(await page.getByRole('textbox',{name,exact:true}).inputValue()==='',variant.name+': OK resets '+name);
+   }
+   await page.getByRole('button',{name:'Kategori Proyek Web Development',exact:true}).waitFor({state:'attached'});
+   check(true,variant.name+': OK resets category to Web Development');
+   await page.getByRole('button',{name:'Open navigation menu',exact:true}).click();
+   await page.getByText('Home',{exact:true}).click();
+   await page.getByRole('heading',{name:'MyPortfolio',exact:true}).waitFor();
+   check(true,variant.name+': drawer returns to Home');
+   console.log(variant.name+': browser checks passed');
    await context.close();
   }
   check(errors.length===0,'No JavaScript exceptions in the release web build');
