@@ -6,6 +6,7 @@
 
 ## Progres
 
+- Tugas 08 (Done)
 - Tutorial 09 (Done)
 - Tutorial 08 (Done)
 - Tugas 7 (Done)
@@ -154,3 +155,37 @@ Hasil validasi Tugas 7 pada 16 November 2026:
    | Full restart | Menghentikan dan menjalankan aplikasi kembali, termasuk pembangunan ulang bagian platform bila diperlukan. | Mengubah kode native Kotlin/Java/Swift/Objective-C atau konfigurasi platform. |
 
    Hot reload tidak cukup jika perubahan harus mengeksekusi ulang inisialisasi atau tidak didukung oleh mekanisme reload, misalnya perubahan bentuk generic tertentu. Kesalahan kompilasi juga harus diperbaiki sebelum reload berhasil. Untuk perubahan kode Dart yang butuh state awal baru, gunakan hot restart; untuk perubahan native, gunakan full restart. Hot reload dan hot restart merupakan alat pengembangan pada mode debug, bukan fitur aplikasi rilis.
+
+### Tugas 8
+
+1. **Perbedaan push, pushReplacement, dan pop serta navigasi formulir**
+
+   `Navigator.push()` menambahkan route di atas tumpukan sehingga halaman sebelumnya masih ada. Kartu **Tambah Pengalaman** memakainya untuk membuka `ExperienceFormPage` melalui `MaterialPageRoute`. Back bawaan perangkat atau browser dapat menutup route tersebut dan menampilkan menu sebelumnya.
+
+   `Navigator.pushReplacement()` mengganti route teratas. Drawer menggunakan cara ini untuk membuka Home, Add Project, dan Tambah Pengalaman, sehingga perpindahan lewat drawer tidak terus menambahkan halaman. Saat Home dipilih, `Navigator.pop(context)` terlebih dahulu menutup drawer, lalu `pushReplacement()` mengganti halaman aktif dengan `MyHomePage`. Jika sebelumnya sudah ada route lain di bawahnya, route itu tetap ada; replacement bukan penghapusan seluruh riwayat. `Navigator.pop()` juga dipakai oleh tombol Tutup untuk menutup dialog ringkasan dan kembali ke form.
+
+2. **Struktur halaman dan konsistensi tema**
+
+   `Scaffold` menyediakan kerangka halaman, `AppBar` menampilkan judul, dan properti `drawer` memasang komponen `LeftDrawer` yang sama. Home, form proyek, dan form pengalaman berbagi menu navigasi tersebut, sehingga opsi Home dan Add Project tetap tersedia setelah form baru ditambahkan.
+
+   Seluruh halaman memakai tema dari `MaterialApp`. Contohnya, warna utama portofolio dari `colorScheme.primary` dipakai pada judul AppBar melalui `AppBarTheme`, header drawer, dan tombol Simpan pada form pengalaman. Warna teks tombol mengambil `onPrimary` agar sesuai dengan latarnya. Tidak perlu membuat skema warna terpisah pada setiap halaman.
+
+3. **Alasan memilih tata letak formulir**
+
+   Form menggunakan `Column` karena enam isian dikerjakan berurutan: judul, kategori, lokasi, tanggal mulai, tanggal selesai opsional, dan deskripsi. Susunan satu kolom menjaga label dan isian tetap terbaca pada ponsel. `Padding` memberi ruang dari tepi layar, sedangkan `SizedBox` memberi jarak antarkolom input. `ConstrainedBox` membatasi lebar form pada layar besar, dan `Align` menempatkan tombol Simpan di tengah.
+
+   `SingleChildScrollView` membuat bagian bawah form tetap dapat dijangkau ketika layar pendek, teks diperbesar, atau keyboard mengurangi ruang. `Scaffold` menggunakan perilaku resize untuk menyesuaikan body terhadap keyboard; `SafeArea` menjaga konten dari area antarmuka sistem. Isi dialog juga dapat digulir ketika deskripsi panjang. Tanggal menggunakan `showDatePicker`, sesuai tipe `DateField` model Experience, sedangkan kategori menggunakan dropdown enam pilihan yang sama dengan model.
+
+4. **GlobalKey, validator, dan validate saat Simpan**
+
+   `GlobalKey<FormState>` menghubungkan kode tombol dengan state `Form`. Ketika Simpan ditekan, `_formKey.currentState!.validate()` menjalankan validator setiap field. Validator mengembalikan pesan jika salah dan `null` jika valid. Dialog hanya dibuka bila seluruh validator lolos.
+
+   Judul, lokasi, serta deskripsi harus berisi teks yang dapat dibaca; teks kosong, spasi, atau tag kosong ditolak. Judul dan lokasi maksimal 255 karakter mengikuti model Django. Kategori harus termasuk pilihan model. Tanggal mulai wajib, tanggal selesai opsional, dan tanggal selesai yang dipilih tidak boleh lebih awal dari tanggal mulai. Contoh: mulai `2026-01-10` dengan selesai `2026-01-09` ditolak. Selesai pada hari yang sama diperbolehkan; tanggal selesai kosong ditampilkan sebagai “Masih berlangsung”.
+
+   Jenis keyboard hanya membantu pemasukan data dan tidak menjamin data sah. Date picker membantu memilih tanggal kalender yang valid, tetapi hubungan antara dua tanggal tetap membutuhkan validator. Form ini tidak mempunyai field URL karena model Experience yang dipilih memang tidak memilikinya. Ringkasan menampilkan seluruh enam isian; Tutup menutup dialog dan mempertahankan form. Pada tahap ini data belum disimpan atau dikirim ke Django.
+
+#### Penggunaan AI pada Tugas 8
+
+Saya menggunakan Codex untuk membantu menyusun form dan navigasi dan membuat serta menjalankan pengujian.
+
+Bantuan AI tidak menggantikan pemeriksaan hasil. Aturan field saya cocokkan dengan model/form/validator backend yang dibaca langsung, hasil saya uji untuk input valid, tidak valid, navigasi, dan layar sempit. Keterbatasannya antara lain risiko salah memahami aturan model dan interaksi browser.
