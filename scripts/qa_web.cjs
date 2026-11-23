@@ -40,8 +40,9 @@ const actions=['Lihat Proyek','Tambah Proyek','Lihat Pengalaman','Tambah Pengala
     const message='Kamu telah menekan tombol '+name+'!';
     await page.getByText(message,{exact:true}).first().waitFor({state:'attached'});
     check(true,variant.name+': '+name+' shows the matching SnackBar');
-    if(name==='Tambah Proyek'){
-     await page.getByRole('heading',{name:'Add Project Form',exact:true}).waitFor();
+    if(name==='Tambah Proyek'||name==='Tambah Pengalaman'){
+     const title=name==='Tambah Proyek'?'Add Project Form':'Tambah Pengalaman';
+     await page.getByRole('heading',{name:title,exact:true}).waitFor();
      check(true,variant.name+': project action opens the form');
      await page.goBack();
      await page.getByRole('heading',{name:'MyPortfolio',exact:true}).waitFor();
@@ -72,6 +73,7 @@ const actions=['Lihat Proyek','Tambah Proyek','Lihat Pengalaman','Tambah Pengala
     const field=page.getByRole('textbox',{name});
     await field.click();
     await page.waitForTimeout(200); // Flutter attaches its text-input connection after focus.
+    await page.keyboard.press('ControlOrMeta+A');
     await field.pressSequentially(value,{delay:20});
     await page.waitForTimeout(100);
     await page.keyboard.press('Tab');
@@ -102,6 +104,62 @@ const actions=['Lihat Proyek','Tambah Proyek','Lihat Pengalaman','Tambah Pengala
    await page.getByText('Home',{exact:true}).click();
    await page.getByRole('heading',{name:'MyPortfolio',exact:true}).waitFor();
    check(true,variant.name+': drawer returns to Home');
+   await page.getByRole('button',{name:'Open navigation menu',exact:true}).click();
+   await page.getByText('Tambah Pengalaman',{exact:true}).click();
+   await page.getByRole('heading',{name:'Tambah Pengalaman',exact:true}).waitFor();
+   check(true,variant.name+': drawer opens Experience');
+   await scrollForm(1800);
+   await page.getByRole('button',{name:'Simpan',exact:true}).click();
+   await scrollForm(-1800);
+   for(const text of ['Judul tidak boleh kosong!','Deskripsi tidak boleh kosong!','Tanggal mulai wajib dipilih!']){
+    await page.getByText(text,{exact:true}).first().waitFor({state:'attached'});
+   }
+   check(true,variant.name+': invalid Experience stays on the form');
+   await enter(/^Judul Pengalaman/,'Desainer Portofolio');
+   await enter('Lokasi','Jakarta');
+   await page.getByRole('button',{name:'Kategori Pengalaman Full-Time',exact:true}).click();
+   await page.getByRole('menuitem',{name:'Volunteer',exact:true}).click();
+   const pickDate=async(label,value)=>{
+    await scrollForm(-1800);
+    await page.getByRole('textbox',{name:label}).click();
+    const dialog=page.getByRole('dialog');
+    await dialog.getByRole('button',{name:'Switch to input',exact:true}).click();
+    const input=dialog.getByRole('textbox');
+    await input.click();
+    await page.waitForTimeout(200);
+    await page.keyboard.press('ControlOrMeta+A');
+    await input.pressSequentially(value,{delay:20});
+    await page.keyboard.press('Tab');
+    await dialog.getByRole('button',{name:'Pilih',exact:true}).click();
+    await dialog.waitFor({state:'detached'});
+   };
+   await pickDate(/^Tanggal Mulai/,'01/10/2026');
+   await pickDate(/^Tanggal Selesai/,'01/09/2026');
+   await scrollForm(1800);
+   await enter(/^Deskripsi Pengalaman/,'Mendesain identitas visual.');
+   await page.getByRole('button',{name:'Simpan',exact:true}).click();
+   await page.getByText('Tanggal selesai tidak boleh sebelum tanggal mulai!',{exact:true}).first().waitFor({state:'attached'});
+   check(true,variant.name+': reversed Experience dates are rejected');
+   await pickDate(/^Tanggal Selesai/,'01/11/2026');
+   await scrollForm(1800);
+   await page.getByRole('button',{name:'Simpan',exact:true}).click();
+   for(const line of ['Judul: Desainer Portofolio','Kategori: Volunteer','Lokasi: Jakarta','Tanggal mulai: 2026-01-10','Tanggal selesai: 2026-01-11','Deskripsi: Mendesain identitas visual.']){
+    await page.getByText(line,{exact:true}).waitFor({state:'attached'});
+   }
+   check(true,variant.name+': valid Experience summary contains every field');
+   await page.waitForTimeout(350);
+   await page.screenshot({path:path.join(output,variant.name+'-experience-dialog.png')});
+   await page.getByRole('button',{name:'Tutup',exact:true}).click();
+   await page.waitForTimeout(250);
+   await page.screenshot({path:path.join(output,variant.name+'-experience-form.png')});
+   await page.getByRole('button',{name:'Simpan',exact:true}).click();
+   await page.getByText('Deskripsi: Mendesain identitas visual.',{exact:true}).waitFor({state:'attached'});
+   check(true,variant.name+': closing summary preserves the form');
+   await page.getByRole('button',{name:'Tutup',exact:true}).click();
+   await page.getByRole('button',{name:'Open navigation menu',exact:true}).click();
+   await page.getByText('Home',{exact:true}).click();
+   await page.getByRole('heading',{name:'MyPortfolio',exact:true}).waitFor();
+   check(true,variant.name+': Experience drawer returns to Home');
    console.log(variant.name+': browser checks passed');
    await context.close();
   }
