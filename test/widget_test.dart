@@ -1,3 +1,5 @@
+import 'support/api_fixture.dart';
+
 import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart';
@@ -18,11 +20,16 @@ Future<void> pumpMenu(
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
-    MaterialApp(
-      theme: buildPortfolioTheme(brightness),
-      home: MediaQuery(
-        data: MediaQueryData(size: size, textScaler: TextScaler.linear(scale)),
-        child: const MyHomePage(),
+    testScope(
+      child: MaterialApp(
+        theme: buildPortfolioTheme(brightness),
+        home: MediaQuery(
+          data: MediaQueryData(
+            size: size,
+            textScaler: TextScaler.linear(scale),
+          ),
+          child: const MyHomePage(),
+        ),
       ),
     ),
   );
@@ -33,7 +40,7 @@ void main() {
   testWidgets('bootstrap opens the portfolio instead of the counter demo', (
     tester,
   ) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(apiClient: fakeApi()));
     await tester.pumpAndSettle();
     expect(find.text('MyPortfolio'), findsOneWidget);
     expect(find.text('Haikal Rafka A Rahman'), findsNWidgets(2));
@@ -74,7 +81,11 @@ void main() {
       await tester.tap(find.byKey(ValueKey(item.name)));
       await tester.pumpAndSettle();
       expect(
-        find.text('Kamu telah menekan tombol ${item.name}!'),
+        find.text(
+          item.name == 'Logout'
+              ? 'Kamu telah logout.'
+              : 'Kamu telah menekan tombol ${item.name}!',
+        ),
         findsOneWidget,
       );
       expect(find.byType(SnackBar), findsOneWidget);
@@ -84,11 +95,14 @@ void main() {
 
   testWidgets('a new action replaces the previous SnackBar', (tester) async {
     await pumpMenu(tester);
-    await tester.tap(find.byKey(const ValueKey('Lihat Proyek')));
+    await tester.tap(find.byKey(const ValueKey('Lihat Pengalaman')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('Tambah Proyek')));
     await tester.pumpAndSettle();
-    expect(find.text('Kamu telah menekan tombol Lihat Proyek!'), findsNothing);
+    expect(
+      find.text('Kamu telah menekan tombol Lihat Pengalaman!'),
+      findsNothing,
+    );
     expect(
       find.text('Kamu telah menekan tombol Tambah Proyek!'),
       findsOneWidget,
@@ -113,7 +127,7 @@ void main() {
       );
       await tester.tap(find.byKey(const ValueKey('Logout')));
       await tester.pumpAndSettle();
-      expect(find.text('Kamu telah menekan tombol Logout!'), findsOneWidget);
+      expect(find.text('Kamu telah logout.'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }
@@ -130,7 +144,7 @@ void main() {
     );
     await tester.tap(find.byKey(const ValueKey('Logout')));
     await tester.pumpAndSettle();
-    expect(find.text('Kamu telah menekan tombol Logout!'), findsOneWidget);
+    expect(find.text('Kamu telah logout.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

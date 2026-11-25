@@ -1,4 +1,8 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:myportofolio_mobile/screens/project_list_screen.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
@@ -20,7 +24,7 @@ class ItemCard extends StatelessWidget {
           side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
         ),
         child: InkWell(
-          onTap: () {
+          onTap: () async {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
@@ -29,7 +33,23 @@ class ItemCard extends StatelessWidget {
                   duration: const Duration(seconds: 3),
                 ),
               );
+            if (item.name == 'Logout') {
+              final auth = context.read<AuthState>();
+              if (auth.isLoggedIn) await auth.logout();
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Kamu telah logout.')),
+              );
+            }
+            if (item.name == 'Lihat Proyek') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProjectListScreen()),
+              );
+            }
             if (item.name == 'Tambah Proyek') {
+              if (!await ensureLoggedIn(context) || !context.mounted) return;
               Navigator.push(
                 context,
                 MaterialPageRoute(

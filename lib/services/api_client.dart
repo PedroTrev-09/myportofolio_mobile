@@ -84,8 +84,9 @@ class ApiClient {
         body: jsonEncode(project.toJson()),
       ),
     );
-    if (response.statusCode != 201)
+    if (response.statusCode != 201) {
       throw ApiException(response.statusCode, 'Expected 201 Created');
+    }
     try {
       return Project.fromJson(_decode(response) as Map<String, dynamic>);
     } on TypeError {

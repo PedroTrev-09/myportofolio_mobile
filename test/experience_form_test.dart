@@ -1,3 +1,5 @@
+import 'support/api_fixture.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myportofolio_mobile/main.dart';
@@ -16,15 +18,17 @@ Future<void> openExperience(
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
-    MaterialApp(
-      theme: buildPortfolioTheme(Brightness.light),
-      home: MediaQuery(
-        data: MediaQueryData(
-          size: size,
-          textScaler: TextScaler.linear(scale),
-          viewInsets: EdgeInsets.only(bottom: keyboard),
+    testScope(
+      child: MaterialApp(
+        theme: buildPortfolioTheme(Brightness.light),
+        home: MediaQuery(
+          data: MediaQueryData(
+            size: size,
+            textScaler: TextScaler.linear(scale),
+            viewInsets: EdgeInsets.only(bottom: keyboard),
+          ),
+          child: const ExperienceFormPage(),
         ),
-        child: const ExperienceFormPage(),
       ),
     ),
   );
@@ -69,7 +73,7 @@ void main() {
   testWidgets('experience card pushes a route and system Back restores Home', (
     tester,
   ) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(apiClient: fakeApi()));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const ValueKey('Tambah Pengalaman')));
     await tester.pumpAndSettle();
@@ -88,7 +92,7 @@ void main() {
   testWidgets(
     'shared drawer opens Experience and preserves Home and Add Project',
     (tester) async {
-      await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(MyApp(apiClient: fakeApi()));
       await tester.pumpAndSettle();
       tester.state<ScaffoldState>(find.byType(Scaffold)).openDrawer();
       await tester.pumpAndSettle();
