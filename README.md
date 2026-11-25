@@ -6,6 +6,7 @@
 
 ## Progres
 
+- Tugas 10 (Done)
 - Tugas 08 (Done)
 - Tutorial 09 (Done)
 - Tutorial 08 (Done)
